@@ -1,0 +1,14 @@
+token-lint v1/ProviderCard.css
+drift: 10 · raw-ramp: 2 · unknown: 0 · unresolved: 0 · token: 84 · component: 0
+  L19  drift    width: 72px                  → not on the 4px scale: a --space-* step, or unresolved
+  L19  drift    height: 72px                 → not on the 4px scale: a --space-* step, or unresolved
+  L28  drift    width: 22px                  → not on the 4px scale: a --space-* step, or unresolved
+  L28  drift    height: 22px                 → not on the 4px scale: a --space-* step, or unresolved
+  L45  drift    height: 24px                 → --space-6
+  L50  drift    width: 8px                   → --space-2
+  L50  drift    height: 8px                  → --space-2
+  L52  drift    width: 40px                  → --space-10
+  L52  drift    height: 40px                 → --space-10
+  L66  drift    height: 30px                 → not on the 4px scale: a --space-* step, or unresolved
+  L67  raw-ramp --green-50                   → use the semantic alias ("Do not reference these directly … unless no alias fits")
+  L67  raw-ramp --green-200                  → use the semantic alias ("Do not reference these directly … unless no alias fits")

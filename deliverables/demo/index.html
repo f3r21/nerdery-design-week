@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vello week, case study</title>
+<meta name="description" content="Nerdery Design Week, engineering track: five days on Vello, the gaps caught, the claims verified, the pushbacks made.">
+<link rel="stylesheet" href="https://vello-design-system.vercel.app/styles.css">
+<!-- Vello Design System tokens, live; the fallback values below are the same tokens. -->
+<link rel="stylesheet" href="../fri/vendor/fonts-local.css">
+<style>
+:root{
+  --bg:var(--color-bg,#F6F2E7); --surface:var(--surface-card,#FFFFFF); --ink:var(--text-strong,#1B1C18); --body:var(--text-body,#3D3F37); --muted:var(--text-muted,#6E7064);
+  --line:var(--border-default,#E5E4D6); --brand:var(--brand-primary,#557E26); --brand-text:var(--text-brand,#466621); --tint:var(--brand-primary-tint,#EBF1DB);
+  --radius:var(--radius-lg,20px); --pill:var(--radius-pill,999px);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#141613; --surface:#1C1F1A; --ink:#EDEBE2; --body:#CFCDC2; --muted:#9A9C90; --line:#2E312B; --brand:#8FB663; --brand-text:#B6CF92; --tint:#22301A; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--body);font:16px/1.5 var(--font-sans,"Hanken Grotesk",system-ui,sans-serif);padding:32px 16px 96px}
+main{max-width:960px;margin:0 auto}
+h1,h2{font-family:var(--font-display,"Bricolage Grotesque",sans-serif);color:var(--ink);margin:0;letter-spacing:-0.01em;line-height:1.18}
+h1{font-size:38px;font-weight:700}
+h2{font-size:24px;font-weight:600}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-text)}
+header{padding:8px 0 24px;border-bottom:1px solid var(--line);margin-bottom:24px}
+header p{max-width:66ch;margin:12px 0 0}
+.method{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:20px}
+.method div{background:var(--tint);border-radius:14px;padding:12px 14px;color:var(--ink);font-weight:500}
+.method b{display:block;font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--brand-text);margin-bottom:4px}
+section.day{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin:16px 0;display:grid;grid-template-columns:96px 1fr;gap:16px}
+@media (max-width:640px){section.day{grid-template-columns:1fr}}
+.when{font-family:"JetBrains Mono",monospace;font-size:14px;color:var(--muted);line-height:1.4}
+.when b{display:block;color:var(--ink);font-size:15px}
+.day p{margin:6px 0 0;max-width:66ch}
+.links{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px}
+.links a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border-radius:var(--pill);border:1px solid var(--brand);color:var(--brand-text);text-decoration:none;font-weight:600;font-size:14px;background:transparent}
+.links a.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+@media (prefers-color-scheme: dark){.links a.primary{color:#1B1C18}}
+.links a:focus-visible{outline:none;box-shadow:var(--focus-ring,0 0 0 3px rgba(85,126,38,.32))}
+mark{background:var(--tint);color:var(--ink);padding:0 4px;border-radius:4px}
+footer{margin-top:32px;color:var(--muted);font-size:14px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="eyebrow">Nerdery Design Week · Engineering · Demo day</div>
+  <h1>Vello, one week as a case study.</h1>
+  <p>Five days on a hyperlocal services app. One method every day: my pass first, Claude's second, every claim checked against the source. Below: what each day produced, and what the method caught.</p>
+  <p><a href="present.html" style="font-weight:600;color:var(--brand-text)">Demo-day walkthrough (11 steps) →</a> <span style="color:var(--muted);font-size:14px">· offline fallback: <a href="steps/">one PNG per step (00–10)</a> · the manual, as quoted (not in this package)</span></p>
+  <p style="font-size:14px;color:var(--muted)"><a href="../README.md">Read me first</a> · Behind the deck: <a href="evidence.md">evidence per claim</a> · <a href="checklist.md">every box in the manual</a> · <a href="deck-lint.txt">the deck's own token lint</a></p>
+  <div class="method">
+    <div><b>Rule 1</b>AI generates, I decide</div>
+    <div><b>Rule 2</b>Verify against the source</div>
+    <div><b>Rule 3</b>Name the assumptions, list the unresolved</div>
+    <div><b>Rule 4</b>Judgment, not artifacts</div>
+  </div>
+</header>
+
+<section class="day" id="mon">
+  <div class="when"><b>Monday</b>Design foundations<br>1 min</div>
+  <div>
+    <h2>Design's role, and where engineering plugs in.</h2>
+    <p>Claude's five-phase process was clean and generic. Two pushbacks made it Vello's: <mark>engineering enters at Discover</mark>, because "6 min walk" is a routing engine, not microcopy; and <mark>three interdependent roles break linear gates</mark>, because a Provider is invisible until an Admin approves.</p>
+    <div class="links"><a class="primary" href="../mon/DELIVERABLE.md">Reflection</a><a href="../mon/challenge.md">The challenge</a><a href="../mon/end-to-end-design-process-for-Vello-v1.md">Claude's first map</a><a href="../mon/things-engineering-could-contribute.md">Phase → contribution → failure mode</a></div>
+  </div>
+</section>
+
+<section class="day" id="tue">
+  <div class="when"><b>Tuesday</b>Discovery &amp; research<br>1 min 45</div>
+  <div>
+    <h2>Seven themes, ranked by evidence. One killed.</h2>
+    <p>Claude said P02 demands formal background checks. P02 hired Marta on Denise's word and handed her a key: <mark>"Denise vouched for her. That's the check."</mark> Attitude is not behaviour. The entity list moved from a check badge to a vouch record with a times-hired count.</p>
+    <div class="links"><a class="primary" href="../tue/DELIVERABLE.md">Synthesis, statements, entities</a><a href="../tue/audit.md">The audit</a><a href="../tue/thematic-synthesis.md">All seven themes</a><a href="../tue/problem-statements.md">Problem statements + entity list</a></div>
+  </div>
+</section>
+
+<section class="day" id="wed">
+  <div class="when"><b>Wednesday</b>Architecture &amp; flows<br>1 min 45</div>
+  <div>
+    <h2>Post a request: 89 states, 14 endpoints, 18 gaps.</h2>
+    <p>The prototype has no network; every endpoint is an assumption. My draft said no cancel — wrong: the prototype has <mark>Close request</mark>. The gap I defend: <mark>G1, a posted request can never receive replies</mark>. Five questions went to "unresolved", not the contract.</p>
+    <div class="links"><a class="primary" href="../wed/post-a-request-flow.html">Flow, states, endpoints, gaps</a><a href="../wed/DELIVERABLE.md">One-screen index</a><a href="../where-i-corrected-claude.md">Correction log</a></div>
+  </div>
+</section>
+
+<section class="day" id="thu">
+  <div class="when"><b>Thursday</b>UI craft &amp; critique<br>1 min 45</div>
+  <div>
+    <h2>Neighbor detail, Grace Lin: my pass, then Claude's.</h2>
+    <p>My pass first, then Claude's. Both found persimmon <mark>"Available" chip: off-system, 4.10:1, fails AA</mark>, uneven stat tiles, missing states. I alone found <mark>"15 min by bus"</mark> and voided a false "wrong tab" finding. Counts: both 4, human 2, AI 6, AI wrong 1, unverifiable 1.</p>
+    <div class="links"><a class="primary" href="../thu/DELIVERABLE.md">Comparative audit</a><a href="../thu/neighbor-detail-grace-lin.png">The screen</a><a href="../thu/human-pass.md">My pass (no AI)</a><a href="../thu/ai-pass.md">Claude's pass</a></div>
+  </div>
+</section>
+
+<section class="day" id="fri">
+  <div class="when"><b>Friday</b>Design to faithful code<br>2 min</div>
+  <div>
+    <h2>ProviderCard from the docs and tokens only.</h2>
+    <p>Built from docs and tokens. v1 linted at <mark>10 drift + 2 raw ramps</mark>, cut to <mark>0 drift, 4 declared unresolved</mark>. "Available" fails AA at 4.10:1. Then: <mark>the prototype's home card is not the DS ProviderCard</mark>; source hardcodes 14 px, eight questions remain.</p>
+    <div class="links"><a class="primary" href="../fri/ProviderCard.html">The component</a><a href="../fri/FIDELITY-AUDIT.md">Fidelity audit (one page)</a><a href="../fri/DELIVERABLE.md">Full audit</a><a href="../fri/CLAUDE.md">The guardrail</a><a href="../fri/spec-by-hand.md">Spec by hand</a></div>
+  </div>
+</section>
+
+<section class="day" id="close">
+  <div class="when"><b>Close</b>Final package<br>45 s</div>
+  <div>
+    <h2>Two checklists the week grew.</h2>
+    <p>What I need from design at handoff, and what engineering can do before design commits. Both grown from Monday's touchpoints and corrected by Tuesday to Friday.</p>
+    <div class="links"><a class="primary" href="../handoff-checklist.md">Handoff checklist</a><a class="primary" href="../engineering-design-support-checklist.md">Engineering design-support checklist</a></div>
+  </div>
+</section>
+
+<footer><span>RAVN Design · Round Robin · Engineering track</span><span>Every claim links to its file.</span></footer>
+</main>
+</body>
+</html>

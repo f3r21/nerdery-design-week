@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grace Lin, critique to code</title>
+<meta name="description" content="One Vello screen, audited by hand and by Claude, then rebuilt as a faithful component.">
+<link rel="stylesheet" href="https://vello-design-system.vercel.app/styles.css">
+<link rel="stylesheet" href="../fri/vendor/fonts-local.css">
+<link rel="stylesheet" href="../fri/vendor/colors.css">
+<link rel="stylesheet" href="../fri/vendor/typography.css">
+<link rel="stylesheet" href="../fri/vendor/spacing.css">
+<link rel="stylesheet" href="../fri/vendor/base.css">
+<style>
+/* Vello DS tokens (local copies, then the live sheet). Declared exceptions below: SVG overlay sizes are viewBox units, not CSS px. */
+:root{
+  --ov-num: 52px;   /* unresolved: SVG viewBox units, not CSS px */
+  --ov-label: 40px; /* unresolved: SVG viewBox units, not CSS px */
+  --ov-ghost: 40px; /* unresolved: SVG viewBox units, not CSS px */
+  --deck-chrome: 36px; /* unresolved: vertical room for the footer, deck layout only */
+  --deck-danger-text: var(--red-700); /* unresolved: no semantic alias for danger text on cream; the danger alias itself fails AA there */
+}
+html,body{height:100%}
+body{margin:0;background:var(--color-bg);color:var(--text-body);font-family:var(--font-sans);font-size:var(--text-base);line-height:var(--lh-relaxed);overflow:hidden}
+.stage{display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);gap:var(--space-6);height:100vh;padding:var(--space-5) var(--space-6) var(--space-4)}
+.stage.wide{grid-template-columns:minmax(0,1fr)}
+.stage.wide .phone{display:none}
+.stage.wide .content{max-width:none;display:flex;flex-direction:column;font-size:clamp(var(--text-sm),0.8vw + 0.9vh,var(--text-xl))}
+.stage.wide .frames{flex:1 1 auto;min-height:0}
+.stage.wide h1{max-width:none;font-size:var(--text-3xl)}
+.stage.wide .big{font-size:var(--text-4xl)}
+.stage.wide .content{justify-content:flex-start;gap:var(--space-4)}
+.stage.wide .fails{flex:0 1 auto;min-height:0;max-height:calc(var(--space-32) + var(--space-20))}
+@media (max-height: 51.25rem){.stage.wide h1{font-size:var(--text-2xl);margin-bottom:var(--space-2)}.stage.wide .big{font-size:var(--text-3xl);margin-bottom:0}.stage.wide .big small{font-size:var(--text-sm);margin-top:var(--space-1)}.stage.wide .content:has(.frames) .links{margin-top:0}
+.stage.wide .content:has(.frames) .foot{font-size:var(--text-sm);margin-top:var(--space-2)}.stage.wide .content{gap:var(--space-2)}}
+.phone{position:relative;height:calc(100vh - var(--deck-chrome));aspect-ratio:836/1716;max-width:100%;justify-self:end;align-self:center}
+.phone img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;border-radius:var(--radius-xl)}
+.phone svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.panel{display:flex;flex-direction:column;min-width:0;height:calc(100vh - var(--deck-chrome))}
+.eyebrow{display:flex;gap:var(--space-3);align-items:center;flex-wrap:wrap}
+.eyebrow .tag{font-size:var(--text-sm);font-weight:var(--fw-bold);letter-spacing:var(--ls-wider);text-transform:uppercase;background:var(--brand-primary-tint);color:var(--text-brand);padding:var(--space-1) var(--space-3);border-radius:var(--radius-pill)}
+.eyebrow .tag.off{background:var(--danger-tint);color:var(--deck-danger-text)}
+.eyebrow .key{margin-left:auto;font-size:var(--text-sm);color:var(--text-muted);font-family:var(--font-mono)}
+h1{font-family:var(--font-display);font-weight:var(--fw-bold);font-size:clamp(var(--text-2xl),2.2vw + 1.6vh,var(--text-5xl));line-height:var(--lh-snug);letter-spacing:var(--ls-snug);color:var(--text-strong);margin:var(--space-2) 0 var(--space-4);max-width:24ch}
+.content{flex:1 1 auto;min-height:0;overflow:auto;max-width:66ch;font-size:clamp(var(--text-base),0.9vw + 0.9vh,var(--text-2xl))}
+.content p{margin:0 0 var(--space-3)}
+.content ul{margin:0 0 var(--space-3);padding-left:var(--space-5)}
+.content li{margin:var(--space-1) 0}
+.content .foot{color:var(--text-muted);margin-top:var(--space-3)}
+.big{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-weight:var(--fw-semibold);font-size:clamp(var(--text-3xl),4.2vw + 1.2vh,var(--text-6xl));line-height:var(--lh-tight);color:var(--text-strong);margin:0 0 var(--space-2);letter-spacing:var(--ls-tight)}
+.big small{display:block;font-family:var(--font-sans);font-weight:var(--fw-medium);font-size:var(--text-md);line-height:var(--lh-normal);color:var(--text-muted);margin-top:var(--space-2);letter-spacing:var(--ls-normal)}
+.big.off{color:var(--deck-danger-text)}
+.big.on{color:var(--text-brand)}
+q{font-style:italic}
+.check{list-style:none;padding:0}
+.check li{display:flex;gap:var(--space-2);align-items:baseline}
+.check b{font-family:var(--font-mono);width:1.4em;text-align:center;border-radius:var(--radius-xs)}
+.check .ok{color:var(--text-brand)}
+.check .no{color:var(--deck-danger-text)}
+table{border-collapse:collapse;width:100%;font-size:var(--text-sm);line-height:var(--lh-normal);margin:var(--space-2) 0 var(--space-3)}
+th,td{text-align:left;padding:var(--space-2);border-bottom:1px solid var(--border-subtle);vertical-align:top}
+th{color:var(--text-muted);font-weight:var(--fw-semibold);font-size:var(--text-sm);letter-spacing:var(--ls-wide)}
+td.n{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-weight:var(--fw-semibold);color:var(--text-strong);text-align:right;width:3ch}
+code{font-family:var(--font-mono);font-size:var(--text-sm);background:var(--surface-sunken);padding:0;border-radius:var(--radius-xs)}
+.frames{display:grid;grid-template-columns:minmax(0,35rem) minmax(0,1fr);gap:var(--space-4);flex:1 1 auto;min-height:0}
+.frames figure,.week div,.fails div,.hand div{background:var(--surface-card);border:1.5px solid var(--border-default);border-radius:var(--radius-lg);padding:var(--space-5)}
+.frames figure{margin:0;display:flex;flex-direction:column;min-height:0;overflow:hidden;padding:0}
+.frames figcaption{padding:var(--space-3) var(--space-4);font-weight:var(--fw-semibold);color:var(--text-strong);border-bottom:1px solid var(--border-subtle);display:flex;justify-content:space-between;gap:var(--space-3);white-space:nowrap}
+.frames figcaption span{font-family:var(--font-mono);font-weight:var(--fw-semibold);color:var(--text-muted);font-size:var(--text-sm);overflow:hidden;text-overflow:ellipsis;min-width:0}
+.frames iframe{flex:1 1 auto;width:100%;border:0;background:var(--color-bg)}
+.week,.fails{display:grid;grid-template-columns:repeat(5,1fr);}
+.fails{grid-template-columns:repeat(3,1fr);gap:var(--space-4);margin:var(--space-2) 0 var(--space-4)}
+.week div,.fails div{font-size:inherit;line-height:var(--lh-normal);display:flex;flex-direction:column}
+.week b,.fails b,.hand b{display:block;font-family:var(--font-sans);font-size:1.05em;font-weight:var(--fw-semibold);color:var(--text-strong);margin-bottom:var(--space-2)}
+.week i{display:block;font-style:normal;color:var(--text-muted);font-size:var(--text-sm);margin-top:auto;padding-top:var(--space-2)}
+.hand{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);margin:0 0 var(--space-4)}
+.hand div{font-size:inherit}
+.hand b{color:var(--text-brand)}
+footer{display:flex;align-items:center;gap:var(--space-4);padding-top:var(--space-3);color:var(--text-muted);font-size:var(--text-sm);white-space:nowrap}
+footer .dots{display:flex;gap:var(--space-2);flex:1}
+footer .dots i{width:var(--space-2);height:var(--space-2);border-radius:var(--radius-pill);background:var(--text-subtle);display:block}
+footer .dots i.on{background:var(--brand-primary)}
+footer button{font-family:var(--font-sans);font-size:var(--text-base);font-weight:var(--fw-semibold);height:calc(var(--space-10) + var(--space-1));padding:0 var(--space-5);border-radius:var(--radius-pill);border:1.5px solid var(--brand-primary);background:transparent;color:var(--text-brand);cursor:pointer;transition:background var(--dur-fast) var(--ease-standard)}
+footer button:hover{background:var(--brand-primary-tint)}
+footer button.primary{background:var(--brand-primary);color:var(--text-on-brand);border-color:transparent}
+footer button.primary:hover{background:var(--brand-primary-hover)}
+footer button:disabled{opacity:.45;cursor:default}
+footer button:focus-visible{outline:none;box-shadow:var(--focus-ring)}
+.links{font-size:var(--text-sm);color:var(--text-muted)}
+.links a{color:var(--text-link);font-weight:var(--fw-semibold)}
+/* Overlay chrome: olive on-system, red fail, --info blue for AI rows. */
+.ov-mask{fill:var(--text-strong);fill-opacity:.55}
+.ov-rect{fill:none;stroke-width:8;rx:18}
+.ov-on{stroke:var(--brand-primary)}
+.ov-off{stroke:var(--deck-danger-text)}
+.ov-neutral{stroke:var(--text-strong);stroke-dasharray:14 10}
+.ov-ai{stroke:var(--info);stroke-dasharray:14 10}
+.ov-num circle{fill:var(--brand-primary)}
+.ov-num text{fill:var(--text-on-brand);font-family:var(--font-display);font-weight:var(--fw-bold);font-size:var(--ov-num);text-anchor:middle}
+.ov-label rect{fill:var(--text-strong);rx:14}
+.ov-label.off rect{fill:var(--deck-danger-text)}
+.ov-label.on rect{fill:var(--text-brand)}
+.ov-label text{fill:var(--color-bg);font-family:var(--font-mono);font-weight:var(--fw-semibold);font-size:var(--ov-label)}
+.ov-ghost rect{fill:var(--color-bg);stroke:var(--text-strong);stroke-dasharray:12 10;stroke-width:4;rx:18}
+.ov-ghost text{fill:var(--text-strong);font-family:var(--font-sans);font-weight:var(--fw-semibold);font-size:var(--ov-ghost)}
+.ov-ghost.mono text{font-family:var(--font-mono)}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="phone" id="phone">
+    <img id="shot" src="../thu/neighbor-detail-grace-lin.png" alt="Vello prototype, Neighbor detail screen for Grace Lin, math and SAT tutor">
+    <svg viewBox="0 0 836 1716" id="ov" aria-hidden="true"></svg>
+  </div>
+  <section class="panel">
+    <div class="eyebrow" id="eyebrow"></div>
+    <h1 id="title" aria-live="polite"></h1>
+    <div class="content" id="content" tabindex="0"></div>
+    <footer>
+      <div class="dots" id="dots" aria-hidden="true"></div>
+      <span id="counter"></span><span>built on the Vello Design System tokens</span>
+      <button id="prev" aria-label="Previous step">←</button>
+      <button id="next" class="primary" aria-label="Next step">Next →</button>
+    </footer>
+  </section>
+</div>
+<script>
+// Boxes measured on the 836×1716 capture with PIL. Native SVG coordinates.
+const B = {
+  titleName:[335,163,492,202], photo:[324,255,503,446], heroName:[308,477,520,527], service:[288,550,541,590],
+  availChip:[211,615,371,658], walkChip:[386,612,623,662],
+  tiles:[82,701,745,834], tile1:[82,701,302,834], tile2:[303,701,524,834], tile3:[525,701,745,834],
+  bookBtn:[187,1355,748,1462], homeTab:[108,1510,182,1605],
+};
+const pad = (b,p=14)=>[b[0]-p,b[1]-p,b[2]+p,b[3]+p];
+const rect = (b,cls='ov-on',p=14)=>{const [x0,y0,x1,y1]=pad(b,p);return `<rect class="ov-rect ${cls}" x="${x0}" y="${y0}" width="${x1-x0}" height="${y1-y0}"/>`;};
+const num = (b,n,side='l')=>{const cx=side==='r'?b[2]+34:b[0]-30, cy=b[1]-30;return `<g class="ov-num"><circle cx="${cx}" cy="${cy}" r="40"/><text x="${cx}" y="${cy}" dy=".36em">${n}</text></g>`;};
+const label = (x,y,t,cls='')=>{const w=t.length*24+56;x=Math.min(x,780-w);y=Math.min(y,1596);return `<g class="ov-label ${cls}"><rect x="${x}" y="${y}" width="${w}" height="64"/><text x="${x+28}" y="${y+32}" dy=".36em">${t}</text></g>`;};
+const ghost = (b,t,cls='')=>{let [x0,y0,x1,y1]=b;const w=Math.max(x1-x0,t.length*(cls==='mono'?25:21)+48);x0=Math.min(x0,780-w);return `<g class="ov-ghost ${cls}"><rect x="${x0}" y="${y0}" width="${w}" height="${y1-y0}"/><text x="${x0+24}" y="${(y0+y1)/2}" dy=".36em">${t}</text></g>`;};
+const spot = (boxes,p=14)=>{ // dim everything except the boxes
+  let d = `M0 0H836V1716H0Z`;
+  for (const b of boxes){const [x0,y0,x1,y1]=pad(b,p); d += ` M${x0} ${y0}H${x1}V${y1}H${x0}Z`;}
+  return `<path class="ov-mask" d="${d}" fill-rule="evenodd"/>`;
+};
+
+const IMG = { one:{src:'../thu/neighbor-detail-grace-lin.png', w:836, h:1716}, two:{src:'../thu/neighbor-detail-grace-lin-2.png', w:836, h:1716} };
+// Boxes on capture two (same 836×1716 framing as capture one: trust row, offers, reviews).
+const B2 = { trust:[83, 308, 751, 376], date:[571, 874, 725, 912], stars:[109, 948, 259, 984] };
+const steps = [
+  { tag:'Purpose · four questions', sub:'Vello, a neighborhood services app · Neighbor detail · Grace Lin', title:'One action, and no way to fail.',
+    ov: rect(B.bookBtn,'ov-on') + label(60,1240,'main action','on') + ghost([380,1196,812,1242],'failure state: none'),
+    html:`<p>Four questions from office hours. Two have no answer on this screen.</p>
+    <ul class="check">
+      <li><b class="ok">✓</b><span><b>Job:</b> judge one tutor, book her.</span></li>
+      <li><b class="ok">✓</b><span><b>Main action:</b> "Book Grace", the one olive primary.</span></li>
+      <li><b class="no">✗</b><span><b>Success state:</b> lives on the confirmation, not here.</span></li>
+      <li><b class="no">✗</b><span><b>Failure / empty:</b> none.</span></li>
+    </ul>
+    <p class="foot">Wednesday: 89 state rows for the post-a-request flow.</p>` },
+  { tag:'My pass · hierarchy', title:'Where the eye lands, 1 · 2 · 3.',
+    ov: spot([B.heroName,B.photo,B.service]) + rect(B.heroName,'ov-on') + num(B.heroName,1,'r') + rect(B.photo,'ov-on') + num(B.photo,2,'r') + rect(B.service,'ov-on') + num(B.service,3,'l'),
+    html:`<p>My own pass, dictated before any AI critique.</p>
+    <ul>
+      <li><b>Name:</b> scale, weight, position.</li>
+      <li><b>Photo:</b> the only photograph, with the trust shield.</li>
+      <li><b>Service line:</b> smaller, lighter, reads third.</li>
+    </ul>
+    <p class="foot">Mechanisms on-system; the sizes, 23 px and 13.5 px, are off the type scale.</p>` },
+  { tag:'Planted issue · contrast', tagOff:true, title:'“Available” fails AA.',
+    ov: spot([B.availChip]) + rect(B.availChip,'ov-off') + label(96,672,'4.10:1 · fails AA','off'),
+    big:'4.10<small>to 1 · WCAG AA needs 4.5 at 12 px semibold · the dot is 2.63:1, under the 3:1 bar for graphics</small>', bigCls:'off',
+    html:`<p><b>A bookable state, colored like an error.</b> Badge docs: <q>Do not use accent badges for anything but a time-limited offer.</q></p>
+    <p class="foot">The design system's own card sets this chip in olive.</p>` },
+  { tag:'Planted issue · consistency', tagOff:true, title:'Three tiles, one role, two sizes.',
+    ov: spot([B.tiles]) + rect(B.tile1,'ov-neutral',0) + rect(B.tile2,'ov-neutral',0) + rect(B.tile3,'ov-neutral',0) + label(90,925,'17 px · 17 px','') + label(500,925,'13 px',''),
+    html:`<p>Rating and price at 17 px, response time at 13 px.</p>
+    <p>Response time reads as less important; the product bet says it matters as much.</p>
+    <p class="foot">The monospace numbers are right.</p>` },
+  { tag:'Planted issues · below the fold', tagOff:true, img:'two', title:'Below the fold, the same mistakes.',
+    ov: rect(B2.date,'ov-off') + label(360,804,'1 · 11 px · 3.3:1','off') + rect(B2.trust,'ov-neutral') + label(473,386,'2 · raw ramps','') + rect(B2.stars,'ov-neutral') + label(283,1010,'3 · stars, no number',''),
+    html:`<ul>
+      <li><b>1 · Review dates:</b> 11 px in the subtle text color, 3.3:1, fails WCAG AA.</li>
+      <li><b>2 · Trust row:</b> raw color ramps instead of the semantic aliases; the Color rule says not to reference them in product code.</li>
+      <li><b>3 · Stars only:</b> allowed when the number is repeated nearby; the 5.0 above is the aggregate, not this review's score.</li>
+    </ul>
+    <p class="foot">My first pass had called the trust row on-system.</p>` },
+  { tag:'Missing states · research', tagOff:true, title:'What the screen cannot show.',
+    ov: ghost([150,608,398,666],'Unavailable') + ghost([82,701,524,834],'No reviews yet','mono') + ghost([440,608,780,666],'15 min bus','mono') + ghost([187,1355,748,1462],'Couldn’t book · try again'),
+    html:`<p><b>Unavailable · new, no reviews · booking failed · a distance that is not a walk.</b></p>
+    <p>Tuesday, six interviews. P04, a cleaner fifteen minutes away by bus from the neighborhood she serves: <q>I can't afford Kestrel Park.</q> <q>They've never asked. Not once, in nine years.</q></p>
+    <p class="foot">A walking-only chip hides the real supply. And P02 hired on a neighbor's word: <q>Denise vouched for her. That's the check.</q></p>` },
+  { tag:'AI pass · what Claude added and got wrong', title:'Then Claude. Broad, and wrong once.',
+    ov: rect(B.homeTab,'ov-ai') + label(120,1596,'AI: wrong tab · dismissed','') + rect(B.titleName,'ov-ai') + label(335,150,'AI: duplicate name',''),
+    big:'24 → 12<small>items Claude produced → AI-derived rows in the audit table: 8 dropped as low severity, 4 merged (the four state rows into one). Plus 2 rows only I had = 14.</small>',
+    html:`<table><tr><td class="n">4</td><td>both</td><td class="n">2</td><td>only me: the bus, the vouch</td></tr>
+    <tr><td class="n">6</td><td>only Claude: three medium, three low</td><td class="n">1</td><td>wrong: the lit Home tab</td></tr>
+    <tr><td class="n">1</td><td>unverifiable from a screenshot</td><td></td><td></td></tr></table>
+    <p class="foot">The detail is reachable from Home only, so a lit Home tab is the prototype's navigation model, not a defect.</p>` },
+  { tag:'From critique to code · craft', title:'The card that opens this screen, rebuilt from docs and tokens only.', wide:true,
+    big:'12 → 0<small>flagged values of 96 in v1: 6 resolved to scale tokens and aliases, 6 rows (4 values) declared open as designer questions, none guessed · px ≤ 3 exempt as hairlines</small>', bigCls:'on',
+    html:`<div class="frames">
+      <figure><figcaption>v1 · docs + tokens + hand spec <span>10 raw px · 2 raw ramps</span></figcaption><iframe src="../fri/v1/ProviderCard.v1.html" title="ProviderCard v1" tabindex="-1"></iframe></figure>
+      <figure><figcaption>v2 · guardrail active <span>0 raw px · 4 declared open</span></figcaption><iframe src="../fri/ProviderCard.html" title="ProviderCard v2" tabindex="-1"></iframe></figure>
+    </div>
+    <p class="foot">The Home card, the only way into this screen; v1 keeps the prototype's persimmon chip on purpose. Below Grace, a 37-character name: v1 widens its page and the rating falls off the frame; v2 truncates it. The lint cannot see that; the render can.</p>
+    <p class="links">Friday, four parts: this component · <a href="../fri/FIDELITY-AUDIT.md">one-page audit</a> · eight open questions · <a href="../fri/CLAUDE.md">guardrail</a></p>` },
+  { tag:'The real file · opened last', title:'Two cards, one name: the system\'s and the prototype\'s.',
+    ov: spot([B.walkChip]) + rect(B.walkChip,'ov-neutral') + label(300,690,'minutes · not miles',''),
+    html:`<p>The system's <code>ProviderCard</code> and the prototype's Home card share a name and little else.</p>
+    <table><tr><th></th><th>Design-system ProviderCard</th><th>Prototype Home card</th></tr>
+    <tr><td>Distance</td><td>"0.4 mi"</td><td>"14 min walk"</td></tr>
+    <tr><td>Action</td><td>Book button, <code>size="sm"</code> = 36 px</td><td>the card is one button</td></tr>
+    <tr><td>Available</td><td><code>brand</code>, olive</td><td>persimmon</td></tr>
+    <tr><td>Source</td><td><code>gap: 14px</code>, <code>1.5px</code></td><td>the same <code>14px</code>, <code>1.5px</code>, raw ramps</td></tr></table>
+    <p><b>36 px fails the system's own 44 px tap-target rule.</b> Both hardcode 14 px against the contributing rule.</p>
+    <p class="foot">Eight questions to the designer. Monday's version: walking time is a routing decision.</p>` },
+  { tag:'What I got wrong · and what changed', sub:'The week', title:'The numbers I copied were the numbers that drifted.', wide:true,
+    html:`<div class="fails">
+      <div><b>Wednesday, twice</b>My draft said the request screen had no cancel; it has "Close request". It also invented an error modal that exists nowhere.</div>
+      <div><b>The token lint</b>Two regex bugs made the "before" count wrong.</div>
+      <div><b>Eleven corrections</b>Eight of them numbers: computed once, copied by hand, drifted between file and slide. Four on this deck.</div>
+    </div>
+    <p><b>Two critiques I checked and rejected:</b> NotebookLM called two design-system claims "overstated", both lines are verbatim in the docs; the second review said P06 never talks about price, P06 does.</p>
+    <p class="foot">The guardrail's last rule: compare the render before saying done.</p>` },
+  { tag:'Close · the week, and what I hand back', sub:'The week', title:'Everything here traces to a line I can read to you.', wide:true,
+    html:`<div class="week">
+      <div><b>Mon</b>Engineering enters at the Discover phase, not at review.<i>reflection, two pushbacks</i></div>
+      <div><b>Tue</b>Seven themes, one killed.<i>synthesis, entities</i></div>
+      <div><b>Wed</b>89 screen-state rows, 14 endpoints, 18 gaps. The biggest: a posted request never gets replies.<i>flow + API contract</i></div>
+      <div><b>Thu</b>My pass, then Claude's; 14 findings resolved against the docs, the standard or the research.<i>comparative audit</i></div>
+      <div><b>Fri</b>12 flagged values → 0, four declared unresolved.<i>component + audit</i></div>
+    </div>
+    <div class="hand">
+      <div><b>Handoff checklist</b>15 rows, two from my misses.</div>
+      <div><b>Engineering support checklist</b>13 rows, six phases.</div>
+    </div>
+    <p>One traced line: <code>vello/02-ds-components.md:142</code> <q>md and lg meet the 44px minimum tap target; sm is 36px and is only for dense desktop toolbars.</q></p>
+    <p class="foot">None of it overrules the designer. The ceiling is still theirs to set.</p>
+    <p class="links"><a href="../handoff-checklist.md">handoff checklist</a> · <a href="../engineering-design-support-checklist.md">engineering support checklist</a> · <a href="../where-i-corrected-claude.md">correction log</a> · <a href="index.html">the whole week</a></p>` },
+];
+
+let i = Math.min(Math.max(parseInt(location.hash.slice(1)) || 0, 0), steps.length - 1);
+const $ = id => document.getElementById(id);
+function render(){
+  const s = steps[i];
+  $('stage').classList.toggle('wide', !!s.wide);
+  const im = IMG[s.img || 'one']; const img = $('shot'); if (img.getAttribute('src') !== im.src) img.src = im.src; $('ov').setAttribute('viewBox', `0 0 ${im.w} ${im.h}`); $('phone').style.aspectRatio = `${im.w}/${im.h}`;
+  $('ov').innerHTML = s.ov || '';
+  $('eyebrow').innerHTML = `<span class="tag ${s.tagOff?'off':''}">${s.tag}</span><span>${s.sub ?? 'Neighbor detail · Grace Lin'}</span>` + (s.ov ? `<span class="key">olive on-system · dashed flagged · red fails AA · blue AI</span>` : '');
+  $('title').textContent = s.title;
+  $('content').innerHTML = (s.big ? `<div class="big ${s.bigCls||''}">${s.big}</div>` : '') + s.html;
+  $('content').scrollTop = 0;
+  $('dots').innerHTML = steps.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('');
+  $('counter').textContent = `${i+1} / ${steps.length}`;
+  $('prev').disabled = i===0; $('next').textContent = i===steps.length-1 ? 'Done' : 'Next →';
+  history.replaceState(null,'',`#${i}`);
+}
+function go(d){ i = Math.min(Math.max(i+d,0),steps.length-1); render(); }
+$('prev').onclick = ()=>go(-1); $('next').onclick = ()=>go(1);
+function onKey(key){ if(['ArrowRight',' ','PageDown','ArrowDown'].includes(key)) go(1); else if(['ArrowLeft','PageUp','ArrowUp'].includes(key)) go(-1); else if(key==='Home'){i=0;render();} else if(key==='End'){i=steps.length-1;render();} }
+addEventListener('keydown', e=>{ if(['ArrowRight',' ','PageDown','ArrowDown','ArrowLeft','PageUp','ArrowUp','Home','End'].includes(e.key)){ e.preventDefault(); onKey(e.key); } });
+// The component iframes forward their navigation keys (see fri/harness.jsx), so a click inside a frame does not stop the deck.
+addEventListener('message', e=>{ const ok=[...document.querySelectorAll('.frames iframe')].some(f=>f.contentWindow===e.source); if(ok && e.data && e.data.vello==='key') onKey(e.data.key); });
+addEventListener('hashchange', ()=>{ i = Math.min(Math.max(parseInt(location.hash.slice(1))||0,0),steps.length-1); render(); });
+render();
+</script>
+</body>
+</html>

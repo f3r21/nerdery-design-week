@@ -1,0 +1,85 @@
+/* ProviderCard · v2 (guardrail active). Semantic tokens only; dimensions with no token are declared once below. */
+.pc {
+  /* unresolved: none of these four sizes is printed in the docs. Ask the designer. */
+  --pc-avatar: 72px;      /* unresolved: Avatar size xl? */
+  --pc-mark: 22px;        /* unresolved: VerifiedMark size on an xl avatar (docs default 16 + rim) */
+  --pc-badge-h: 24px;     /* unresolved: Badge md height */
+  --pc-chip-h: 30px;      /* unresolved: walk chip height as drawn (not on the 4 px scale) */
+
+  display: flex;
+  min-width: 0; max-width: 100%;            /* guardrail 7: long content must not widen the container */
+  gap: var(--space-4);
+  align-items: flex-start;
+  padding: var(--space-4);
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  color: var(--text-body);
+  text-decoration: none;
+}
+.pc:hover { text-decoration: none; box-shadow: var(--shadow-md); border-color: var(--border-strong); }
+.pc:focus-visible { outline: none; box-shadow: var(--focus-ring); border-color: var(--border-focus); }
+.pc--featured { box-shadow: var(--shadow-brand); }
+@media (prefers-reduced-motion: no-preference) {
+  .pc { transition: box-shadow var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard); }
+}
+
+.pc__avatar { position: relative; flex: 0 0 auto; width: var(--pc-avatar); height: var(--pc-avatar); }
+.pc__photo, .pc__initials { display: block; width: 100%; height: 100%; border-radius: var(--radius-pill); object-fit: cover; }
+.pc__initials {
+  display: grid; place-items: center; background: var(--brand-primary-tint); color: var(--text-brand);
+  font-family: var(--font-display); font-weight: var(--fw-semibold); font-size: var(--text-lg);
+}
+.pc__mark {
+  position: absolute; right: 0; bottom: 0; width: var(--pc-mark); height: var(--pc-mark);
+  display: grid; place-items: center; border-radius: var(--radius-pill);
+  background: var(--brand-primary); color: var(--text-on-brand); box-shadow: 0 0 0 2px var(--color-bg);
+}
+.pc__mark--pending { background: var(--warning); color: var(--text-strong); }
+.pc__mark--top-rated { background: var(--rating); color: var(--text-strong); }
+.pc__mark--unverified { background: var(--surface-sunken); color: var(--text-muted); }
+
+.pc__body { display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; }
+.pc__head { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
+.pc__name {
+  flex: 0 1 auto; min-width: 0;
+  font-family: var(--font-display); font-weight: var(--fw-semibold); font-size: var(--text-lg);
+  line-height: var(--lh-snug); letter-spacing: var(--ls-snug); color: var(--text-strong);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.pc__badge {
+  display: inline-flex; align-items: center; gap: var(--space-1); flex: 0 0 auto;
+  padding: 0 var(--space-3); height: var(--pc-badge-h); border-radius: var(--radius-pill);
+  font-family: var(--font-sans); font-weight: var(--fw-semibold); font-size: var(--text-sm); line-height: 1;
+}
+/* Live availability is a status, not an offer: success tint + dot (Badge docs), not the accent tint the
+   screenshot shows. --accent-press on --accent-tint is 4.10:1 and fails AA at 12 px semibold. Logged as drift-by-decision. */
+.pc__badge--available { background: var(--success-tint); color: var(--text-brand); }
+.pc__badge--new { background: var(--brand-primary-tint); color: var(--text-brand); }
+.pc__dot { width: var(--space-2); height: var(--space-2); border-radius: var(--radius-pill); background: var(--success); }
+.pc__chevron {
+  margin-left: auto; flex: 0 0 auto; width: var(--space-10); height: var(--space-10); display: grid; place-items: center;
+  border-radius: var(--radius-pill); background: var(--surface-sunken); color: var(--text-muted);
+}
+.pc__summary {
+  margin-top: var(--space-1);
+  font-family: var(--font-sans); font-size: var(--text-base); line-height: var(--lh-normal); color: var(--text-body);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.pc__price { display: flex; align-items: baseline; gap: var(--space-2); margin-top: var(--space-3); color: var(--text-strong); }
+.pc__from, .pc__amount, .pc__score, .pc__walk { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: var(--ls-snug); }
+.pc__from { font-size: var(--text-base); }
+.pc__amount { font-size: var(--text-md); font-weight: var(--fw-semibold); }
+.pc__unit { font-family: var(--font-sans); font-size: var(--text-base); color: var(--text-muted); }
+.pc__meta { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-3); flex-wrap: wrap; }
+.pc__walk {
+  display: inline-flex; align-items: center; gap: var(--space-1); height: var(--pc-chip-h); padding: 0 var(--space-3);
+  border-radius: var(--radius-pill); background: var(--surface-brand-tint); border: 1px solid var(--border-default);
+  color: var(--text-brand); font-size: var(--text-sm); font-weight: var(--fw-medium);
+  /* drift-by-decision: the screenshot tint is --green-50 (raw ramp, no alias); the alias --surface-brand-tint is one step darker */
+}
+.pc__rating { display: inline-flex; align-items: center; gap: var(--space-2); }
+.pc__stars { display: inline-flex; gap: 2px; color: var(--rating); }
+.pc__score { font-size: var(--text-base); color: var(--text-strong); }
+.pc__count { font-family: var(--font-sans); font-size: var(--text-sm); color: var(--text-muted); }
+.pc__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

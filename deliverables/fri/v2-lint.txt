@@ -1,0 +1,6 @@
+token-lint ProviderCard.css
+drift: 0 · raw-ramp: 0 · unknown: 0 · unresolved: 4 · token: 90 · component: 6
+  L4  unresolved --pc-avatar: 72px            → declared once, question for the designer
+  L5  unresolved --pc-mark: 22px              → declared once, question for the designer
+  L6  unresolved --pc-badge-h: 24px           → declared once, question for the designer
+  L7  unresolved --pc-chip-h: 30px            → declared once, question for the designer

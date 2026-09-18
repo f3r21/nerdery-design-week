@@ -1,0 +1,7 @@
+token-lint demo/present.html <style>
+drift: 0 · raw-ramp: 1 · unknown: 0 · unresolved: 4 · token: 169 · component: 10
+  L4  unresolved --ov-num: 52px               → declared once, question for the designer
+  L5  unresolved --ov-label: 40px             → declared once, question for the designer
+  L6  unresolved --ov-ghost: 40px             → declared once, question for the designer
+  L7  unresolved --deck-chrome: 36px          → declared once, question for the designer
+  L8  raw-ramp --red-700                    → use the semantic alias ("Do not reference these directly … unless no alias fits")
